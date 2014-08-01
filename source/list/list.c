@@ -50,9 +50,9 @@ bool list_empty(list_t* list)
 }
 
 list_node_t* list_prev(list_t* list, list_node_t* node){
-	list_node_t* prev = (NULL != list && NULL != node && list->head != node) ? list->head : NULL;
-	while(NULL != prev && prev->next != node) prev = prev->next;
-	return prev;
+    list_node_t* prev = (NULL != list && NULL != node && list->head != node) ? list->head : NULL;
+    while(NULL != prev && prev->next != node) prev = prev->next;
+    return prev;
 }
 
 list_node_t* list_at(list_t* list, size_t index)
@@ -87,31 +87,12 @@ int list_index_of(list_t* list, list_node_t* node)
 
 list_node_t* list_push_front( list_t* list, void* contents )
 {
-    list_node_t* node = list_new_node( contents );
-    node->next = list->head;
-    list->head = node;
-    if( NULL == list->tail )
-    {
-        list->tail = node;
-    }
-    return node;
+    return list_insert_after(list, NULL, contents);
 }
 
 list_node_t* list_push_back( list_t* list, void* contents )
 {
-    list_node_t* node = list_new_node( contents );
-    node->next = NULL;
-    if( NULL == list->tail )
-    {
-        list->head = node;
-        list->tail = node;
-    }
-    else
-    {
-        list->tail->next = node;
-        list->tail = node;
-    }
-    return node;
+    return list_insert_after(list, list->tail, contents);
 }
 
 list_node_t* list_pop_front( list_t* list )
@@ -177,6 +158,26 @@ list_node_t* list_insert( list_t* list, size_t index, void* contents)
         {
             mem_release(contents);
         }
+    }
+    return new_node;
+}
+
+list_node_t* list_insert_after( list_t* list, list_node_t* node, void* contents)
+{
+    list_node_t* new_node = list_new_node(contents);
+    if(NULL != node)
+    {
+        new_node->next = node->next;
+        node->next = new_node;
+    }
+    else
+    {
+        new_node->next = list->head;
+        list->head = new_node;
+    }
+    if (node == list->tail)
+    {
+        list->tail = new_node;
     }
     return new_node;
 }
